@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Info Masking</title>
+  <style>
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 12px;
+    }
+    
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #4CAF50;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+    
+    .settings-section {
+      margin-bottom: 16px;
+    }
+    
+    .settings-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #555;
+    }
+    
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-label {
+      flex: 1;
+      color: #666;
+    }
+    
+    .setting-control {
+      margin-left: 8px;
+    }
+    
+    select {
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      font-size: 12px;
+    }
+    
+    .status {
+      text-align: center;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .status.active {
+      background-color: #e8f5e8;
+      color: #2e7d32;
+    }
+    
+    .status.inactive {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+    
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">PII Masking</div>
+    <label class="toggle-switch">
+      <input type="checkbox" id="enableToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+  
+  <div class="status" id="status">
+    読み込み中...
+  </div>
+  
+  <div class="settings-section">
+    <div class="settings-title">マスキング設定</div>
+    
+    <div class="setting-item">
+      <div class="setting-label">メールアドレス</div>
+      <div class="setting-control">
+        <select id="emailMasking">
+          <option value="blur">ぼかし</option>
+          <option value="mosaic">モザイク</option>
+          <option value="blackout">黒塗り</option>
+          <option value="pixelate">ピクセル化</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="setting-item">
+      <div class="setting-label">電話番号</div>
+      <div class="setting-control">
+        <select id="phoneMasking">
+          <option value="blur">ぼかし</option>
+          <option value="mosaic">モザイク</option>
+          <option value="blackout">黒塗り</option>
+          <option value="pixelate">ピクセル化</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="setting-item">
+      <div class="setting-label">クレジットカード</div>
+      <div class="setting-control">
+        <select id="creditCardMasking">
+          <option value="blur">ぼかし</option>
+          <option value="mosaic">モザイク</option>
+          <option value="blackout">黒塗り</option>
+          <option value="pixelate">ピクセル化</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <div class="settings-section">
+    <div class="settings-title">処理設定</div>
+    
+    <div class="setting-item">
+      <div class="setting-label">リアルタイム処理</div>
+      <div class="setting-control">
+        <label class="toggle-switch">
+          <input type="checkbox" id="realTimeToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="setting-item">
+      <div class="setting-label">検出感度</div>
+      <div class="setting-control">
+        <select id="sensitivitySelect">
+          <option value="low">低</option>
+          <option value="medium">中</option>
+          <option value="high">高</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    個人情報保護拡張機能 v1.0.0
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
